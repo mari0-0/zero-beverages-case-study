@@ -116,12 +116,18 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const target = document.querySelector(targetId);
       if (target) {
-        const offset = 80; // navbar height
-        const position = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({
-          top: position,
-          behavior: "smooth",
-        });
+        // Use Lenis for smooth scroll if available
+        if (typeof lenis !== "undefined") {
+          lenis.scrollTo(target, { offset: -80 });
+        } else {
+          // Fallback
+          const offset = 80;
+          const position = target.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({
+            top: position,
+            behavior: "smooth",
+          });
+        }
       }
     });
   });
@@ -441,5 +447,37 @@ document.addEventListener("DOMContentLoaded", () => {
         scale: scale,
       });
     });
+  }
+
+  /* ============================================
+     LENIS SMOOTH SCROLL
+     ============================================ */
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: "vertical",
+    gestureDirection: "vertical",
+    smooth: true,
+    mouseMultiplier: 1,
+    smoothTouch: false,
+    touchMultiplier: 2,
+  });
+
+  // Integreate Lenis with GSAP ScrollTrigger
+  if (typeof ScrollTrigger !== "undefined") {
+    lenis.on("scroll", ScrollTrigger.update);
+
+    gsap.ticker.add(time => {
+      lenis.raf(time * 1000);
+    });
+
+    gsap.ticker.lagSmoothing(0);
+  } else {
+    // Fallback RAF if GSAP not loaded (unlikely)
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
   }
 });
