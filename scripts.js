@@ -403,4 +403,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize GSAP text reveal
   initTextReveal();
+
+  /* ============================================
+     CUSTOM CURSOR FOLLOWER
+     ============================================ */
+  const cursorFollower = document.querySelector(".cursor-follower");
+  if (cursorFollower && typeof gsap !== "undefined") {
+    let mouseX = 0,
+      mouseY = 0;
+    let cursorX = 0,
+      cursorY = 0;
+
+    document.addEventListener("mousemove", e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    gsap.set(cursorFollower, { xPercent: -50, yPercent: -50 });
+
+    gsap.ticker.add(() => {
+      const dt = 1.0 - Math.pow(1.0 - 0.2, gsap.ticker.deltaRatio());
+      cursorX += (mouseX - cursorX) * dt;
+      cursorY += (mouseY - cursorY) * dt;
+
+      // Calculate velocity
+      const vx = mouseX - cursorX;
+      const vy = mouseY - cursorY;
+      const velocity = Math.sqrt(vx * vx + vy * vy);
+
+      // Scale based on velocity (base scale 1, max scale e.g. 2 or 1.5)
+      // The factor 0.005 controls sensitivity.
+      const scale = 1 + Math.min(velocity * 0.005, 0.5);
+
+      gsap.set(cursorFollower, {
+        x: cursorX,
+        y: cursorY,
+        scale: scale,
+      });
+    });
+  }
 });

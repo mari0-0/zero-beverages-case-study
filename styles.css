@@ -2006,3 +2006,34 @@ blockquote {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   CUSTOM CURSOR
+   ============================================ */
+.cursor-follower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.5); /* Semi-transparent border */
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  /* transition: transform 0.1s ease-out; */ /* Removed to prevent conflict with GSAP */
+  mix-blend-mode: difference; /* Optional for visibility */
+  border-color: #fff; /* White border to work with difference mode */
+}
+
+/* Hide default cursor per request */
+body {
+  cursor: none;
+}
+/* Ensure links show pointer cursor? No, user said hide original mouse. Custom cursor should handle all. 
+   Usually we want hover states. I'll stick to hiding default cursor globally. */
+a,
+button,
+[role="button"] {
+  cursor: none;
+}
